@@ -1,0 +1,10 @@
+load("//bazel:rules/typescript/react/defs.bzl", "typescript_react_cra")
+
+typescript_react_cra(npm_deps = [
+    "//:node_modules/eslint-config-react-app",
+    "//:node_modules/react-dom",
+    "//:node_modules/react-scripts",
+    "//:node_modules/react",
+    "//:node_modules/typescript",
+    "//:node_modules/web-vitals",
+])

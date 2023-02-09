@@ -1,0 +1,80 @@
+load("@npm//:@remix-run/dev/package_json.bzl", remix_bin = "bin")
+load("@aspect_rules_js//js:defs.bzl", "js_run_binary", "js_run_devserver")
+load("@aspect_rules_ts//ts:defs.bzl", "ts_config")
+
+remix_bin.remix_binary(
+    name = "remix_js_binary",
+    visibility = ["//visibility:public"],
+)
+
+ts_config(
+    name = "tsconfig",
+    src = "tsconfig.json",
+    visibility = ["//visibility:public"],
+)
+
+SRC_PATTERNS = [
+    "app/**/*",
+    "public/**/*",
+]
+
+srcs = glob(
+    include = SRC_PATTERNS,
+    # exclude = ["public/biuld/**/*"],
+)
+
+print(srcs)
+
+npm_deps = [
+    "tsconfig.json",
+    "remix.config.js",
+    "remix.env.d.ts",
+    "package.json",
+    "//:package_json",
+    "//:node_modules/@remix-run/dev",
+    "//:node_modules/@remix-run/node",
+    "//:node_modules/@remix-run/serve",
+    "//:node_modules/@remix-run/react",
+    "//:node_modules/@types/react",
+    "//:node_modules/react",
+    "//:node_modules/@types/node",
+    "//:node_modules/react-dom",
+    "//:node_modules/typescript",
+    "//:node_modules/isbot",
+    "//:tsconfig.base",
+]
+
+js_run_binary(
+    name = "build",
+    srcs = srcs + npm_deps,
+    args = [
+        "build",
+    ],
+    chdir = package_name(),
+    out_dirs = [
+        "build",
+        "public/build",
+    ],
+    tool = ":remix_js_binary",
+)
+
+js_run_devserver(
+    name = "dev",
+    args = ["dev"],
+    chdir = package_name(),
+    data = srcs + npm_deps,
+    tool = ":remix_js_binary",
+)
+
+js_run_binary(
+    name = "start",
+    srcs = srcs + npm_deps,
+    args = ["build"],
+    chdir = package_name(),
+    out_dirs = [
+        "build",
+        "public/build",
+        ".cache",
+    ],
+    tool = ":remix_js_binary",
+)

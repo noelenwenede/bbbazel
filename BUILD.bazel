@@ -1,0 +1,33 @@
+load("@aspect_rules_ts//ts:defs.bzl", "ts_config")
+load("@npm//:defs.bzl", "npm_link_all_packages")
+load("@aspect_bazel_lib//lib:copy_to_bin.bzl", "copy_to_bin")
+
+npm_link_all_packages(name = "node_modules")
+
+ts_config(
+    name = "tsconfig.base",
+    src = "tsconfig.base.json",
+    visibility = ["//visibility:public"],
+)
+
+ts_config(
+    name = "tsconfig.node",
+    src = "tsconfig.node.json",
+    visibility = ["//visibility:public"],
+    deps = [":tsconfig.base"],
+)
+
+ts_config(
+    name = "tsconfig.react",
+    src = "tsconfig.react.json",
+    visibility = ["//visibility:public"],
+    deps = [":tsconfig.base"],
+)
+
+exports_files(["package.json"])
+
+copy_to_bin(
+    name = "package_json",
+    srcs = ["package.json"],
+    visibility = ["//visibility:public"],
+)
